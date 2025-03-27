@@ -1,4 +1,4 @@
-# sftp_dev_uploader_rust
+# sftp_dev_uploader
 
 ## Docs
 
