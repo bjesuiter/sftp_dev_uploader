@@ -125,6 +125,12 @@ Note: Actual performance gains depend on network latency and SSH server capabili
 
 # Changelog
 
+## Release 1.1.0 - 2025-03-27
+
+- first public release
+- add passphrase support for public key auth
+- add support for password based sftp auth
+
 ## Release 1.0.2 - 2024-12-02
 
 - rename binary to dev_uploader
