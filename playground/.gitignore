@@ -1,0 +1,8 @@
+*
+!.gitignore
+
+!watchdir1
+!watchdir1/*
+
+!watchdir2
+!watchdir2/*

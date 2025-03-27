@@ -1,0 +1,18 @@
+---
+source: src/sftp/sftp_client_tests.rs
+expression: path_vec
+---
+[
+    "/home/tt-bj2/.bash_logout",
+    "/home/tt-bj2/.bashrc",
+    "/home/tt-bj2/.profile",
+    "/home/tt-bj2/.cache",
+    "/home/tt-bj2/.ssh",
+    "/home/tt-bj2/.bash_history",
+    "/home/tt-bj2/.viminfo",
+    "/home/tt-bj2/.sudo_as_admin_successful",
+    "/home/tt-bj2/.lesshst",
+    "/home/tt-bj2/www",
+    "/home/tt-bj2/.gitkeep",
+    "/home/tt-bj2/playground",
+]

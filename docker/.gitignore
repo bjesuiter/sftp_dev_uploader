@@ -1,0 +1,12 @@
+# ignore all files in the sftpgo_service_root folder
+volumes/sftpgo_service_root/*
+!volumes/sftpgo_service_root/.gitkeep
+
+# ignore all files in the sftpgo_data_root folder except for the initial_testfile.txt file for the "test" user
+volumes/sftpgo_data_root/*
+!volumes/sftpgo_data_root/.gitkeep
+!volumes/sftpgo_data_root/data
+!volumes/sftpgo_data_root/data/test
+!volumes/sftpgo_data_root/data/test/initial_testfile.txt
+
+volumes/sftpgo_data_root/data/playground/*

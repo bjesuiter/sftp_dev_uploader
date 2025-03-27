@@ -1,0 +1,8 @@
+---
+source: src/sftp/sftp_client_standard_tests.rs
+expression: path_vec
+---
+[
+    "/initial_testdir",
+    "/initial_testfile.txt",
+]

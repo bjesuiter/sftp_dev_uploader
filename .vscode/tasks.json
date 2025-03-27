@@ -1,0 +1,53 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "watch test",
+			"type": "shell",
+			"command": "cargo watch -x 'insta test -- --nocapture'",
+			"problemMatcher": [],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"runOptions": {
+				"reevaluateOnRerun": true,
+				"instanceLimit": 1
+			}
+		},
+		{
+			"label": "work on specific test",
+			"type": "shell",
+			"command": "cargo watch -x 'insta test test_sftp_lcd -- --nocapture'",
+			"problemMatcher": [],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"runOptions": {
+				"reevaluateOnRerun": true,
+				"instanceLimit": 1
+			}
+		},
+		{
+			"label": "run main --watch-dir ./playground",
+			"type": "shell",
+			"command": "cargo run -- --watch-dir ./playground",
+			"problemMatcher": [],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "run main --help",
+			"type": "shell",
+			"command": "cargo run -- --help",
+			"problemMatcher": [],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		}
+	]
+}

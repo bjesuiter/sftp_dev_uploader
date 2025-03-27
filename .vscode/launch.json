@@ -1,0 +1,29 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug pg-initial-sftp",
+			"cargo": {
+				"args": ["build", "--bin=sftp_dev_uploader_rust"],
+				"filter": {
+					"kind": "bin"
+				}
+			},
+			"env": {
+				"RUST_BACKTRACE": "1"
+			},
+			"args": [
+				"--host=localhost",
+				"--port=2022",
+				"-u=playground:.",
+				"--upload-initial",
+				"-i=.gitkeep",
+				"-e=.gitignore",
+				"-U=playground",
+				"-W=playground"
+			]
+		}
+	]
+}

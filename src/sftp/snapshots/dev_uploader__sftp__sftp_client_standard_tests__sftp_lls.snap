@@ -1,0 +1,10 @@
+---
+source: src/sftp/sftp_client_standard_tests.rs
+expression: path_vec
+---
+[
+    "./upload_file_explicit_remote.md",
+    "./depth1",
+    "./upload_file_implicit_remote.md",
+    "./relative_dir",
+]
