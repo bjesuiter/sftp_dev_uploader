@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: dev_uploader-linux-x64
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            artifact_name: dev_uploader-linux-arm64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: dev_uploader-mac-x64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact_name: dev_uploader-mac-arm64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: dev_uploader-windows-x64.exe
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            artifact_name: dev_uploader-windows-arm64.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@1.85.1
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: target/${{ matrix.target }}/release/dev_uploader${{ matrix.target == 'x86_64-pc-windows-msvc' || matrix.target == 'aarch64-pc-windows-msvc' && '.exe' || '' }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: dev_uploader-*
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          prerelease: false
+          files: |
+            artifacts/dev_uploader-*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
