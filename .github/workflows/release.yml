@@ -9,21 +9,21 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
     strategy:
       matrix:
         include:
           # Works
-          # - os: ubuntu-latest
-          #   target: x86_64-unknown-linux-gnu
-          #   artifact_name: dev_uploader-linux-x64
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            artifact_name: dev_uploader-linux-x64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: dev_uploader-windows-x64.exe
           # Not tested yet
           # - os: macos-latest
           #   target: x86_64-apple-darwin
           #   artifact_name: dev_uploader-mac-x64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact_name: dev_uploader-windows-x64.exe
           # - os: windows-latest
           #   target: aarch64-pc-windows-msvc
           #   artifact_name: dev_uploader-windows-arm64.exe
