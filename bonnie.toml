@@ -6,6 +6,8 @@ version = "0.3.2"
     build-debug.cmd     = "cargo build --bin dev_uploader"
     build-release.cmd   = "cargo build --bin dev_uploader --release"
     build-profiling.cmd = "cargo build --bin dev_uploader --profile profiling"
+    prod.cmd            = "cargo build --bin dev_uploader --release"
+    prod.desc           = "Shortcut for building the release binary"
 
     pg.cmd                 = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground"
     pg-initial.cmd         = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground --upload-initial"
