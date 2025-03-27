@@ -13,12 +13,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            artifact_name: dev_uploader-linux-x64
+          # Works
           # - os: ubuntu-latest
-          #   target: aarch64-unknown-linux-gnu
-          #   artifact_name: dev_uploader-linux-arm64
+          #   target: x86_64-unknown-linux-gnu
+          #   artifact_name: dev_uploader-linux-x64
+          # Not tested yet
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            artifact_name: dev_uploader-linux-arm64
           # - os: macos-latest
           #   target: x86_64-apple-darwin
           #   artifact_name: dev_uploader-mac-x64
@@ -41,7 +43,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --release --bin dev_uploader --target ${{ matrix.target }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
