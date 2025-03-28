@@ -18,14 +18,17 @@ jobs:
             target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
             build_artifact_name: dev_uploader
+            rustflags: '-A warnings'
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
             build_artifact_name: dev_uploader
+            rustflags: '-A warnings -C link-arg=-Wl,-static -C link-arg=-dead_strip'
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: dev_uploader-windows_x64.exe
             build_artifact_name: dev_uploader.exe
+            rustflags: '-A warnings'
           # Not tested yet, also not needed for now
           # - os: windows-latest
           #   target: aarch64-pc-windows-msvc
@@ -51,8 +54,7 @@ jobs:
       - name: Build
         run: cargo build --release --bin dev_uploader --target ${{ matrix.target }}
         env:
-          # can probably be more specific later, like -A unused_imports
-          RUSTFLAGS: -A warnings
+          RUSTFLAGS: ${{ matrix.rustflags }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
