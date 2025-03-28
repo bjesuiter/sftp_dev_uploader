@@ -55,6 +55,8 @@ jobs:
         run: cargo build --release --bin dev_uploader --target ${{ matrix.target }}
         env:
           RUSTFLAGS: ${{ matrix.rustflags }}
+          # needed for macos - will be ignored on other platforms of the matrix build
+          MACOSX_DEPLOYMENT_TARGET: 14.5
 
       - name: Check if build was successful
         run: |
