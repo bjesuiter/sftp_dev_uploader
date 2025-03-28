@@ -18,7 +18,7 @@ jobs:
             target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
             build_artifact_name: dev_uploader
-            rustflags: '-A warnings'
+            rustflags: '-A warnings -C link-arg=-static'
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
@@ -50,6 +50,19 @@ jobs:
           toolchain: 1.85.1
           target: ${{ matrix.target }}
           override: true
+
+      # If we'd need to install homebrew and openssl on macos
+      # - name: Set up Homebrew
+      #   id: set-up-homebrew
+      #   uses: Homebrew/actions/setup-homebrew
+
+      # - name: Install OpenSSL 3
+      #   if: matrix.os == 'macos-latest'
+      #   run: brew install openssl@3
+
+      # - name: Verify OpenSSL version
+      #   if: matrix.os == 'macos-latest'
+      #   run: openssl version
 
       - name: Build
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
