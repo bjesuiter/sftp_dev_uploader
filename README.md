@@ -125,6 +125,10 @@ Note: Actual performance gains depend on network latency and SSH server capabili
 
 # Changelog
 
+## Release 1.1.1 - 2025-03-27
+
+- fix mismatch between tag and build version in Cargo.toml
+
 ## Release 1.1.0 - 2025-03-27
 
 - first public release
