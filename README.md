@@ -134,6 +134,24 @@ Add more rust targets via:
 - List all targets: `rustup target list`
 - Add target: `rustup target add <target>`
 
+## Verify Static and Dynamic Linking with otool on macos
+
+```bash
+    otool -L ./target/release/dev_uploader
+
+    # Example output from a github actions build (before linking ssh2 statically)
+    ~/Downloads took 7s
+    ✖ otool -L dev_uploader
+    dev_uploader:
+        /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 2503.1.0)
+        /System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices (compatibility version 1.0.0, current version 1226.0.0)
+        /opt/homebrew/opt/openssl@3/lib/libssl.3.dylib (compatibility version 3.0.0, current version 3.0.0)
+        /opt/homebrew/opt/openssl@3/lib/libcrypto.3.dylib (compatibility version 3.0.0, current version 3.0.0)
+        /usr/lib/libz.1.dylib (compatibility version 1.0.0, current version 1.2.12)
+        /usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)
+        /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1345.120.2)
+```
+
 ---
 
 # Changelog
