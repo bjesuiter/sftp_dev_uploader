@@ -57,6 +57,9 @@ jobs:
           RUSTFLAGS: ${{ matrix.rustflags }}
           # needed for macos - will be ignored on other platforms of the matrix build
           MACOSX_DEPLOYMENT_TARGET: 14.5
+          # needed for macos - tells the rust crates interfacing with openssl to link against static libraries
+          OPENSSL_STATIC: 1
+          # OPENSSL_DIR: /opt/homebrew/opt/openssl@3
 
       - name: Check if build was successful
         run: |
