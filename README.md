@@ -123,6 +123,19 @@ Note: Actual performance gains depend on network latency and SSH server capabili
 
 ---
 
+# Dev Docs
+
+## Setup for Cross-Compilation (not working without linter support!)
+
+This only installs a respective rust std for the target platforms but does not provide the full build environment.
+
+Add more rust targets via:
+
+- List all targets: `rustup target list`
+- Add target: `rustup target add <target>`
+
+---
+
 # Changelog
 
 ## Release 1.1.1 - 2025-03-27
