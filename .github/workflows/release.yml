@@ -17,12 +17,15 @@ jobs:
           - os: ubuntu-24.04
             target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact_name: dev_uploader-windows_x64.exe
+            build_artifact_name: dev_uploader
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
+            build_artifact_name: dev_uploader
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: dev_uploader-windows_x64.exe
+            build_artifact_name: dev_uploader.exe
           # Not tested yet, also not needed for now
           # - os: windows-latest
           #   target: aarch64-pc-windows-msvc
@@ -51,23 +54,11 @@ jobs:
           # can probably be more specific later, like -A unused_imports
           RUSTFLAGS: -A warnings
 
-      - name: Set artifact path
-        id: set_artifact_path
-        run: |
-          echo "target=${{ matrix.target }}"
-          artifact_path="$TARGET_PATH"
-          if [[ "${{ matrix.target }}" == "x86_64-pc-windows-msvc" || "${{ matrix.target }}" == "aarch64-pc-windows-msvc" ]]; then
-            artifact_path="$artifact_path.exe"
-          fi
-          echo "::set-output name=artifact_path::$artifact_path"
-        env:
-          TARGET_PATH: ${{ env.target_path }}
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}
-          path: ${{ steps.set_artifact_path.outputs.artifact_path }}
+          path: target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }}
 
   # release:
   #   name: Create Release
