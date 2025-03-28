@@ -48,6 +48,9 @@ jobs:
 
       - name: Build
         run: cargo build --release --bin dev_uploader --target ${{ matrix.target }}
+        env:
+          # can probably be more specific later, like -A unused_imports
+          RUSTFLAGS: -A warnings
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
