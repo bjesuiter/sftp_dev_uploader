@@ -164,6 +164,8 @@ jobs:
           name: dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
           path: artifacts
 
+      - run: ls -la artifacts/
+
       - name: Make artifact executable
         run: chmod +x artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
 
