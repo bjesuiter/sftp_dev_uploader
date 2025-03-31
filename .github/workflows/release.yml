@@ -210,11 +210,11 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: release_files
           pattern: dev_uploader-*
 
-      - name: List downloaded artifacts
-        run: ls -la artifacts/
+      - name: List downloaded release_files
+        run: ls -la release_files/
 
       # - name: Prepare artifacts for release
       #   run: |
@@ -226,14 +226,14 @@ jobs:
       #     cp artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe/dev_uploader.exe release_files/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe
       #     ls -la release_files/
 
-      # - name: Create Release
-      #   id: create_release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     draft: true
-      #     prerelease: false
-      #     name: ${{ github.event_name == 'workflow_dispatch' && 'Manual Release' || format('{0}', github.ref_name) }}
-      #     files: |
-      #       release_files/*
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          prerelease: false
+          name: ${{ github.event_name == 'workflow_dispatch' && 'Manual Release' || format('{0}', github.ref_name) }}
+          files: |
+            release_files/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
