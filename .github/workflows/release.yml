@@ -86,7 +86,11 @@ jobs:
       #     sudo apt-get update
       #     sudo apt-get install -y musl-tools
 
-      - name: Build
+      # Cargo build commands
+      # ---------------------
+
+      - name: Build macos
+        if: matrix.target == 'aarch64-apple-darwin'
         env:
           target_path: target/${{ matrix.target }}/release/dev_uploader
           RUSTFLAGS: ${{ matrix.rustflags }}
@@ -94,7 +98,27 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: 14.5
           # needed for macos - tells the rust crates interfacing with openssl to link against static libraries
           OPENSSL_STATIC: 1
+
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
+
+      - name: Build gnu linux
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        env:
+          target_path: target/${{ matrix.target }}/release/dev_uploader
+          RUSTFLAGS: ${{ matrix.rustflags }}
+          # TODO - Try: Add CFLAGS for OpenSSL compatibility with older glibc
+          # CFLAGS: -D_FORTIFY_SOURCE=2 -O2 -fstack-protector-strong -Wformat -Werror=format-security -include string.h -U_GNU_SOURCE
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
+
+      - name: Build windows
+        if: matrix.target == 'x86_64-pc-windows-msvc'
+        env:
+          target_path: target/${{ matrix.target }}/release/dev_uploader.exe
+          RUSTFLAGS: ${{ matrix.rustflags }}
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
+
+      # Artifact check and upload
+      # ---------------------
 
       - name: Check if build was successful
         run: |
