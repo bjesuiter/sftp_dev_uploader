@@ -133,8 +133,8 @@ jobs:
           fi
           ./target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }} --help
 
-      - name: Prepare release file
-        id: prepare_release_file
+      - name: Prepare artifact
+        id: prepare_artifact
         if: |
           (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
           (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
@@ -142,19 +142,12 @@ jobs:
         env:
           BUILD_FILEPATH: target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
           RELEASE_FILENAME: ${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}${{ matrix.artifact_extension }}
+          RELEASE_FILEPATH: artifacts/${RELEASE_FILENAME}
         run: |
-          mkdir -p release_files
-          cp ${BUILD_FILEPATH} release_files/${RELEASE_FILENAME}
+          mkdir -p artifacts
+          cp ${BUILD_FILEPATH} ${RELEASE_FILEPATH}
           echo "filename=${RELEASE_FILENAME}" >> $GITHUB_OUTPUT
-          echo "filepath=release_files/${RELEASE_FILENAME}" >> $GITHUB_OUTPUT
-
-      # - name: Set artifact name
-      #   id: set_artifact_name
-      #   if: |
-      #     (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
-      #     (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
-      #     (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
-      #   run: echo "artifact_name=${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}" >> $GITHUB_OUTPUT
+          echo "filepath=${RELEASE_FILEPATH}" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         id: upload_artifact
@@ -164,8 +157,8 @@ jobs:
           (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.prepare_release_file.outputs.filename }}
-          path: ${{ steps.prepare_release_file.outputs.filepath }}
+          name: ${{ steps.prepare_artifact.outputs.filename }}
+          path: ${{ steps.prepare_artifact.outputs.filepath }}
 
   test_ubuntu_22_artifact:
     name: Test Ubuntu 22.04 Artifact on Ubuntu 24.04
@@ -213,18 +206,18 @@ jobs:
           path: release_files
           pattern: dev_uploader-*
 
-      - name: List downloaded release_files
+      - name: List downloaded artifacts
         run: ls -la release_files/
 
-      # - name: Prepare artifacts for release
-      #   run: |
-      #     mkdir -p release_files
-      #     cp artifacts/dev_uploader-linux_x64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
-      #     chmod +x release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
-      #     cp artifacts/dev_uploader-mac_arm64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
-      #     chmod +x release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
-      #     cp artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe/dev_uploader.exe release_files/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe
-      #     ls -la release_files/
+      - name: Prepare artifacts for release
+        run: |
+          mkdir -p release_files
+          cp -r artifacts/dev_uploader-linux_x64_v${PACKAGE_VERSION}/* release_files/
+          chmod +x release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
+          cp -r artifacts/dev_uploader-mac_arm64_v${PACKAGE_VERSION}/* release_files/
+          chmod +x release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
+          cp -r artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}/* release_files/
+          ls -la release_files/
 
       - name: Create Release
         id: create_release
