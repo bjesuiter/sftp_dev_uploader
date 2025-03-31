@@ -31,10 +31,19 @@ Simply build the project with, for example `bx build-debug`, to install all depe
 
 ## Release a new version (automated via Github actions)
 
+Prepare
+
 - Update version in Cargo.toml
 - Update the changelog.md
+
+Testing
+
 - Start Docker Desktop / Orbstack, if not running
+- Run `docker compose up -d` to start the sftpgo container for testing
 - Run `bx test` to run all tests
+
+Push & Release
+
 - Commit the new version in Cargo.toml and create a new tag with the same version
 - Push the tag => github actions will build the new release
 - Go to the release draft: https://github.com/bjesuiter/sftp_dev_uploader/releases
