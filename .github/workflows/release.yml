@@ -119,19 +119,18 @@ jobs:
 
       # Artifact check and upload
       # ---------------------
-      - name: Check if build was successful (inside matrix_build)
+      - name: Check if build was successful - linux & macos
         if: |
           (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
-          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
-          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true)
         run: |
-          if [ "${{ matrix.rust_target }}" == "x86_64-unknown-linux-gnu" ]; then
-            chmod +x target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
-          fi
-          if [ "${{ matrix.rust_target }}" == "aarch64-apple-darwin" ]; then
-            chmod +x target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
-          fi
+          chmod +x target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
           ./target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }} --help
+
+      - name: Check if build was successful - windows
+        if: matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true
+        run: |
+          ./target/${{ matrix.rust_target }}/release/dev_uploader.exe --help
 
       - name: Prepare artifact
         id: prepare_artifact
