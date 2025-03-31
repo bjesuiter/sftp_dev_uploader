@@ -99,8 +99,10 @@ jobs:
         run: |
           mkdir -p release_files
           cp artifacts/dev_uploader-linux_x64/dev_uploader release_files/dev_uploader-linux_x64
+          chmod +x release_files/dev_uploader-linux_x64
           cp artifacts/dev_uploader-mac_arm64/dev_uploader release_files/dev_uploader-mac_arm64
-          cp artifacts/dev_uploader-windows_x64.exe/dev_uploader.exe release_files/dev_uploader-windows_x64.exe
+          chmod +x release_files/dev_uploader-mac_arm64
+          cp artifacts/dev_uploader-windows_x64.exe release_files/dev_uploader-windows_x64.exe
           ls -la release_files/
 
       - name: Create Release
