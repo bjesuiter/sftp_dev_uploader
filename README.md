@@ -181,6 +181,10 @@ Add more rust targets via:
 
 # Changelog
 
+## Release 1.1.2 & 1.1.3 - 2025-03-31
+
+- finish github actions release workflow
+
 ## Release 1.1.1 - 2025-03-27
 
 - fix mismatch between tag and build version in Cargo.toml
