@@ -48,7 +48,7 @@
     oneshot                    = "0.1.8"
     walkdir                    = "2.5.0"
 
-[target.'cfg(target_os = "linux")'.dependencies]
+[target.'cfg(target_os = "linux" and target_env = "gnu")'.dependencies]
     ssh2 = { version = "0.9.4" } # Use system OpenSSL on Linux
 
 [target.'cfg(not(target_os = "linux"))'.dependencies]
