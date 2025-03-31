@@ -37,38 +37,29 @@ jobs:
           # Use ubuntu 22.04 for gnu builds since the 24.04 version uses GLIBC 2.38
           # which is too new for the Linux Mint VPCs version 21.x, based on ubuntu 22.04
           - os: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
+            rust_target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
             artifact_extension: ''
             build_artifact_name: dev_uploader
             rustflags: '-A warnings'
           # - os: ubuntu-24.04
-          #   target: x86_64-unknown-linux-musl
+          #   rust_target: x86_64-unknown-linux-musl
           #   artifact_name: dev_uploader-linux_x64_musl
           #   artifact_extension: ''
           #   build_artifact_name: dev_uploader
           #   rustflags: '-A warnings'
           - os: macos-latest
-            target: aarch64-apple-darwin
+            rust_target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
             artifact_extension: ''
             build_artifact_name: dev_uploader
             rustflags: '-A warnings'
           - os: windows-latest
-            target: x86_64-pc-windows-msvc
+            rust_target: x86_64-pc-windows-msvc
             artifact_name: dev_uploader-windows_x64
             artifact_extension: '.exe'
             build_artifact_name: dev_uploader.exe
             rustflags: '-A warnings'
-          # Not tested yet, also not needed for now
-          # - os: windows-latest
-          #   target: aarch64-pc-windows-msvc
-          #   artifact_name: dev_uploader-windows-arm64.exe
-          # TODO: fix these - maybe with github arm and macos runners
-          # aka: runs-on: "ubuntu-22.04-arm" or "macos-15"
-          # - os: ubuntu-latest
-          #   target: aarch64-unknown-linux-gnu
-          #   artifact_name: dev_uploader-linux-arm64
 
     steps:
       - uses: actions/checkout@v4
@@ -77,11 +68,11 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: 1.85.1
-          target: ${{ matrix.target }}
+          target: ${{ matrix.rust_target }}
           override: true
 
       # - name: Install musl tools
-      #   if: matrix.target == 'x86_64-unknown-linux-musl'
+      #   if: matrix.rust_target == 'x86_64-unknown-linux-musl'
       #   run: |
       #     sudo apt-get update
       #     sudo apt-get install -y musl-tools
@@ -90,45 +81,60 @@ jobs:
       # ---------------------
 
       - name: Build macos
-        if: matrix.target == 'aarch64-apple-darwin'
+        if: matrix.rust_target == 'aarch64-apple-darwin'
         env:
-          target_path: target/${{ matrix.target }}/release/dev_uploader
+          target_path: target/${{ matrix.rust_target }}/release/dev_uploader
           RUSTFLAGS: ${{ matrix.rustflags }}
           # needed for macos - will be ignored on other platforms of the matrix build
           MACOSX_DEPLOYMENT_TARGET: 14.5
           # needed for macos - tells the rust crates interfacing with openssl to link against static libraries
           OPENSSL_STATIC: 1
 
-        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
 
       - name: Build gnu linux
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        if: matrix.rust_target == 'x86_64-unknown-linux-gnu'
         env:
-          target_path: target/${{ matrix.target }}/release/dev_uploader
+          target_path: target/${{ matrix.rust_target }}/release/dev_uploader
           RUSTFLAGS: ${{ matrix.rustflags }}
           # TODO - Try: Add CFLAGS for OpenSSL compatibility with older glibc
           # CFLAGS: -D_FORTIFY_SOURCE=2 -O2 -fstack-protector-strong -Wformat -Werror=format-security -include string.h -U_GNU_SOURCE
-        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
 
       - name: Build windows
-        if: matrix.target == 'x86_64-pc-windows-msvc'
+        if: matrix.rust_target == 'x86_64-pc-windows-msvc'
         env:
-          target_path: target/${{ matrix.target }}/release/dev_uploader.exe
+          target_path: target/${{ matrix.rust_target }}/release/dev_uploader.exe
           RUSTFLAGS: ${{ matrix.rustflags }}
-        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
 
       # Artifact check and upload
       # ---------------------
-
       - name: Check if build was successful
         run: |
-          ./target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }} --help
+          ./target/${{ matrix.rust_target }}/release/${{ matrix.build_artifact_name }} --help
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_name }}_v${{ needs.get-package-version.outputs.package_version }}${{matrix.artifact_extension}}
-          path: target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }}
+          path: target/${{ matrix.rust_target }}/release/${{ matrix.build_artifact_name }}
+
+  # test-artifacts:
+  #   needs: get-package-version
+  #   runs-on: ${{matrix.os}}
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - os: ubuntu-24.04
+  #           rust_target: x86_64-unknown-linux-gnu
+  #           artifact_name: dev_uploader-linux_x64
+  #           artifact_extension: ''
+  #           build_artifact_name: dev_uploader
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
   release:
     name: Create Release

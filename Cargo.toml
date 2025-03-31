@@ -49,7 +49,8 @@
     walkdir                    = "2.5.0"
 
 [target.'cfg(all(target_os = "linux", target_env = "gnu"))'.dependencies]
-    ssh2 = { version = "0.9.4" } # Use system OpenSSL on Linux
+    # Use system OpenSSL on Linux => avoids problems with static linking when building on ubuntu-22.04
+    ssh2 = { version = "0.9.4" }
 
 [target.'cfg(not(target_os = "linux"))'.dependencies]
     ssh2 = { version = "0.9.4", features = [
