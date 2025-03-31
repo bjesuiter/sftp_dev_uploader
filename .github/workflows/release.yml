@@ -34,8 +34,9 @@ jobs:
     strategy:
       matrix:
         include:
-          # Works
-          - os: ubuntu-24.04
+          # Use ubuntu 22.04 for gnu builds since the 24.04 version uses GLIBC 2.38
+          # which is too new for the Linux Mint VPCs version 21.x, based on ubuntu 22.04
+          - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
             artifact_extension: ''
