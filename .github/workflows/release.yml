@@ -39,22 +39,18 @@ jobs:
           - os: ubuntu-22.04
             rust_target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
-            artifact_extension: ''
             build_executable_name: dev_uploader
           # - os: ubuntu-24.04
           #   rust_target: x86_64-unknown-linux-musl
           #   artifact_name: dev_uploader-linux_x64_musl
-          #   artifact_extension: ''
           #   build_executable_name: dev_uploader
           - os: macos-latest
             rust_target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
-            artifact_extension: ''
             build_executable_name: dev_uploader
           - os: windows-latest
             rust_target: x86_64-pc-windows-msvc
             artifact_name: dev_uploader-windows_x64
-            artifact_extension: '.exe'
             build_executable_name: dev_uploader.exe
 
     steps:
