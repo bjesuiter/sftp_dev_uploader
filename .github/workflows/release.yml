@@ -133,6 +133,7 @@ jobs:
         with:
           draft: true
           prerelease: false
+          name: ${{ github.event_name == 'workflow_dispatch' && 'Manual Release' || format('{0}', github.ref_name) }}
           files: |
             release_files/*
         env:
