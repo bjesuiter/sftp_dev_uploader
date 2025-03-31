@@ -18,8 +18,10 @@
     rustflags = ["-C", "link-arg=-Wl,-dead_strip", "-C", "prefer-dynamic=yes"]
 
 [target.x86_64-unknown-linux-gnu]
-    # This passes the static flag to the linker and leaves the work to it
-    rustflags = ["-C", "link-arg=-static"]
+    # Remove static linking as it conflicts with OpenSSL
+    # Note: static linking works on ubuntu-24.04, but not on ubuntu-22.04
+    # rustflags = ["-C", "link-arg=-static"]
+    rustflags = []
 
 [target.x86_64-unknown-linux-musl]
     linker = "rust-lld"
