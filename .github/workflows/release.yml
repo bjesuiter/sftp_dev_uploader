@@ -72,16 +72,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         if: |
-          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
-          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
-          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
+          (matrix.rust_target == 'aarch64-apple-darwin' && (github.event_name != 'workflow_dispatch' || inputs.build-macos == true)) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && (github.event_name != 'workflow_dispatch' || inputs.build-linux-ubuntu-22 == true)) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && (github.event_name != 'workflow_dispatch' || inputs.build-windows == true))
 
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         if: |
-          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
-          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
-          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
+          (matrix.rust_target == 'aarch64-apple-darwin' && (github.event_name != 'workflow_dispatch' || inputs.build-macos == true)) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && (github.event_name != 'workflow_dispatch' || inputs.build-linux-ubuntu-22 == true)) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && (github.event_name != 'workflow_dispatch' || inputs.build-windows == true))
         with:
           toolchain: 1.85.1
           target: ${{ matrix.rust_target }}
@@ -96,7 +96,7 @@ jobs:
       # Cargo build commands
       # ---------------------
       - name: Build macos
-        if: matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true
+        if: matrix.rust_target == 'aarch64-apple-darwin' && (github.event_name != 'workflow_dispatch' || inputs.build-macos == true)
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
           RUSTFLAGS: '-A warnings'
@@ -106,13 +106,13 @@ jobs:
           OPENSSL_STATIC: 1
 
       - name: Build gnu linux
-        if: matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true
+        if: matrix.rust_target == 'x86_64-unknown-linux-gnu' && (github.event_name != 'workflow_dispatch' || inputs.build-linux-ubuntu-22 == true)
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
           RUSTFLAGS: '-A warnings'
 
       - name: Build windows
-        if: matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true
+        if: matrix.rust_target == 'x86_64-pc-windows-msvc' && (github.event_name != 'workflow_dispatch' || inputs.build-windows == true)
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
           RUSTFLAGS: '-A warnings'
@@ -121,14 +121,14 @@ jobs:
       # ---------------------
       - name: Check if build was successful - linux & macos
         if: |
-          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
-          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true)
+          (matrix.rust_target == 'aarch64-apple-darwin' && (github.event_name != 'workflow_dispatch' || inputs.build-macos == true)) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && (github.event_name != 'workflow_dispatch' || inputs.build-linux-ubuntu-22 == true))
         run: |
           chmod +x target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
           ./target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }} --help
 
       - name: Check if build was successful - windows
-        if: matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true
+        if: matrix.rust_target == 'x86_64-pc-windows-msvc' && (github.event_name != 'workflow_dispatch' || inputs.build-windows == true)
         run: |
           ./target/${{ matrix.rust_target }}/release/dev_uploader.exe --help
 
@@ -138,9 +138,9 @@ jobs:
           BUILD_FILEPATH: target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
           ARTIFACT_FILENAME: ${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}${{ matrix.artifact_extension }}
         if: |
-          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
-          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
-          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
+          (matrix.rust_target == 'aarch64-apple-darwin' && (github.event_name != 'workflow_dispatch' || inputs.build-macos == true)) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && (github.event_name != 'workflow_dispatch' || inputs.build-linux-ubuntu-22 == true)) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && (github.event_name != 'workflow_dispatch' || inputs.build-windows == true))
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_FILENAME }}
