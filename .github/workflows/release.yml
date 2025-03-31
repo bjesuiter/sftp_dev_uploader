@@ -52,6 +52,7 @@ jobs:
           - os: ubuntu-22.04
             rust_target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
+            artifact_extension: ''
             build_executable_name: dev_uploader
           # - os: ubuntu-24.04
           #   rust_target: x86_64-unknown-linux-musl
@@ -60,18 +61,14 @@ jobs:
           - os: macos-latest
             rust_target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
+            artifact_extension: ''
             build_executable_name: dev_uploader
           - os: windows-latest
             rust_target: x86_64-pc-windows-msvc
             artifact_name: dev_uploader-windows_x64
+            artifact_extension: '.exe'
             build_executable_name: dev_uploader.exe
     runs-on: ${{matrix.os}}
-    outputs:
-      os: ${{ matrix.os }}
-      rust_target: ${{ matrix.rust_target }}
-      artifact_name: ${{ matrix.artifact_name }}
-      build_executable_name: ${{ matrix.build_executable_name }}
-      full_artifact_name: ${{ steps.set_artifact_name.outputs.artifact_name }}
     steps:
       - uses: actions/checkout@v4
         if: |
@@ -113,8 +110,6 @@ jobs:
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
           RUSTFLAGS: '-A warnings'
-          # TODO - Try: Add CFLAGS for OpenSSL compatibility with older glibc
-          # CFLAGS: -D_FORTIFY_SOURCE=2 -O2 -fstack-protector-strong -Wformat -Werror=format-security -include string.h -U_GNU_SOURCE
 
       - name: Build windows
         if: matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true
@@ -130,15 +125,36 @@ jobs:
           (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
           (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
         run: |
-          ./target/${{ matrix.rust_target }}/release/${{ matrix.build_executable_name }} --help
+          if [ "${{ matrix.rust_target }}" == "x86_64-unknown-linux-gnu" ]; then
+            chmod +x target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
+          fi
+          if [ "${{ matrix.rust_target }}" == "aarch64-apple-darwin" ]; then
+            chmod +x target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
+          fi
+          ./target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }} --help
 
-      - name: Set artifact name
-        id: set_artifact_name
+      - name: Prepare release file
+        id: prepare_release_file
         if: |
           (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
           (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
           (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
-        run: echo "artifact_name=${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}" >> $GITHUB_OUTPUT
+        env:
+          BUILD_FILEPATH: target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
+          RELEASE_FILENAME: ${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}${{ matrix.artifact_extension }}
+        run: |
+          mkdir -p release_files
+          cp ${BUILD_FILEPATH} release_files/${RELEASE_FILENAME}
+          echo "filename=${RELEASE_FILENAME}" >> $GITHUB_OUTPUT
+          echo "filepath=release_files/${RELEASE_FILENAME}" >> $GITHUB_OUTPUT
+
+      # - name: Set artifact name
+      #   id: set_artifact_name
+      #   if: |
+      #     (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
+      #     (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
+      #     (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
+      #   run: echo "artifact_name=${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         id: upload_artifact
@@ -148,8 +164,8 @@ jobs:
           (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.set_artifact_name.outputs.artifact_name }}
-          path: target/${{ matrix.rust_target }}/release/${{ matrix.build_executable_name }}
+          name: ${{ steps.prepare_release_file.outputs.filename }}
+          path: ${{ steps.prepare_release_file.outputs.filepath }}
 
   test_ubuntu_22_artifact:
     name: Test Ubuntu 22.04 Artifact on Ubuntu 24.04
@@ -176,7 +192,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PACKAGE_VERSION: ${{ needs.get-package-version.outputs.package_version }}
-      FULL_ARTIFACT_NAME: ${{ needs.matrix_build.outputs.full_artifact_name }}
     permissions:
       contents: write
       packages: write
@@ -185,40 +200,38 @@ jobs:
       - name: Log input params
         run: |
           echo "PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}"
-          echo "FULL_ARTIFACT_NAME: ${{ env.FULL_ARTIFACT_NAME }}"
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-  #     - name: Download all artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: artifacts
-  #         pattern: dev_uploader-*
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: dev_uploader-*
 
-  #     - name: List downloaded artifacts
-  #       run: ls -la artifacts/
+      - name: List downloaded artifacts
+        run: ls -la artifacts/
 
-  #     - name: Prepare artifacts for release
-  #       run: |
-  #         mkdir -p release_files
-  #         cp artifacts/dev_uploader-linux_x64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
-  #         chmod +x release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
-  #         cp artifacts/dev_uploader-mac_arm64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
-  #         chmod +x release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
-  #         cp artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe/dev_uploader.exe release_files/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe
-  #         ls -la release_files/
+      # - name: Prepare artifacts for release
+      #   run: |
+      #     mkdir -p release_files
+      #     cp artifacts/dev_uploader-linux_x64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
+      #     chmod +x release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
+      #     cp artifacts/dev_uploader-mac_arm64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
+      #     chmod +x release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
+      #     cp artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe/dev_uploader.exe release_files/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe
+      #     ls -la release_files/
 
-  #     - name: Create Release
-  #       id: create_release
-  #       uses: softprops/action-gh-release@v1
-  #       with:
-  #         draft: true
-  #         prerelease: false
-  #         name: ${{ github.event_name == 'workflow_dispatch' && 'Manual Release' || format('{0}', github.ref_name) }}
-  #         files: |
-  #           release_files/*
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Create Release
+      #   id: create_release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true
+      #     prerelease: false
+      #     name: ${{ github.event_name == 'workflow_dispatch' && 'Manual Release' || format('{0}', github.ref_name) }}
+      #     files: |
+      #       release_files/*
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
