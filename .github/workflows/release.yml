@@ -199,11 +199,17 @@ jobs:
       - name: Prepare artifacts for release
         run: |
           mkdir -p release_files
-          cp -r artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_ubuntu-22.04_v${PACKAGE_VERSION}
-          chmod +x release_files/dev_uploader-linux_x64_ubuntu-22.04_v${PACKAGE_VERSION}
-          cp -r artifacts/dev_uploader-mac_arm64_macos-latest_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_macos-latest_v${PACKAGE_VERSION}
-          chmod +x release_files/dev_uploader-mac_arm64_macos-latest_v${PACKAGE_VERSION}
-          cp -r artifacts/dev_uploader-windows_x64_windows-latest_v${PACKAGE_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64_windows-latest_v${PACKAGE_VERSION}.exe
+          if [ "${{ inputs.build-linux-ubuntu-22 }}" = "true" ]; then
+            cp -r artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_ubuntu-22.04_v${PACKAGE_VERSION}
+            chmod +x release_files/dev_uploader-linux_x64_ubuntu-22.04_v${PACKAGE_VERSION}
+          fi
+          if [ "${{ inputs.build-macos }}" = "true" ]; then
+            cp -r artifacts/dev_uploader-mac_arm64_macos-latest_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_macos-latest_v${PACKAGE_VERSION}
+            chmod +x release_files/dev_uploader-mac_arm64_macos-latest_v${PACKAGE_VERSION}
+          fi
+          if [ "${{ inputs.build-windows }}" = "true" ]; then
+            cp -r artifacts/dev_uploader-windows_x64_windows-latest_v${PACKAGE_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64_windows-latest_v${PACKAGE_VERSION}.exe
+          fi
           ls -la release_files/
 
       - name: Create Release
