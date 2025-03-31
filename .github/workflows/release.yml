@@ -21,16 +21,19 @@ jobs:
           - os: ubuntu-24.04
             target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
+            artifact_extension: ''
             build_artifact_name: dev_uploader
             rustflags: '-A warnings'
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
+            artifact_extension: ''
             build_artifact_name: dev_uploader
             rustflags: '-A warnings'
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact_name: dev_uploader-windows_x64.exe
+            artifact_name: dev_uploader-windows_x64
+            artifact_extension: '.exe'
             build_artifact_name: dev_uploader.exe
             rustflags: '-A warnings'
           # Not tested yet, also not needed for now
@@ -77,7 +80,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}-v${{ env.CARGO_VERSION }}
+          name: ${{ matrix.artifact_name }}_v${{ env.CARGO_VERSION }}${matrix.artifact_extension}
           path: target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }}
 
   release:
@@ -107,11 +110,11 @@ jobs:
       - name: Prepare artifacts for release
         run: |
           mkdir -p release_files
-          cp artifacts/dev_uploader-linux_x64-v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-linux_x64-v${CARGO_VERSION}
-          chmod +x release_files/dev_uploader-linux_x64-v${CARGO_VERSION}
-          cp artifacts/dev_uploader-mac_arm64-v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64-v${CARGO_VERSION}
-          chmod +x release_files/dev_uploader-mac_arm64-v${CARGO_VERSION}
-          cp artifacts/dev_uploader-windows_x64.exe-v${CARGO_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64-v${CARGO_VERSION}.exe
+          cp artifacts/dev_uploader-linux_x64_v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_v${CARGO_VERSION}
+          chmod +x release_files/dev_uploader-linux_x64_v${CARGO_VERSION}
+          cp artifacts/dev_uploader-mac_arm64_v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_v${CARGO_VERSION}
+          chmod +x release_files/dev_uploader-mac_arm64_v${CARGO_VERSION}
+          cp artifacts/dev_uploader-windows_x64_v${CARGO_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64_v${CARGO_VERSION}.exe
           ls -la release_files/
 
       - name: Create Release
