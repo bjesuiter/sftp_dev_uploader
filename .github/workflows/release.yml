@@ -12,6 +12,8 @@ jobs:
   build:
     name: Build
     runs-on: ${{matrix.os}}
+    outputs:
+      cargo_version: ${{ env.CARGO_VERSION }}
     strategy:
       matrix:
         include:
@@ -42,6 +44,7 @@ jobs:
           #   artifact_name: dev_uploader-linux-arm64
     env:
       target_path: target/${{ matrix.target }}/release/dev_uploader
+      CARGO_VERSION: '' # this var is created here and will be filled in by the get_version step
 
     steps:
       - uses: actions/checkout@v4
@@ -52,6 +55,10 @@ jobs:
           toolchain: 1.85.1
           target: ${{ matrix.target }}
           override: true
+
+      - name: Get Version
+        id: get_version
+        run: echo "CARGO_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
 
       - name: Build
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
@@ -70,13 +77,15 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
+          name: ${{ matrix.artifact_name }}-v${{ env.CARGO_VERSION }}
           path: target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }}
 
   release:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
+    env:
+      CARGO_VERSION: ${{ needs.build.outputs.cargo_version }}
     permissions:
       contents: write
       packages: write
@@ -98,11 +107,11 @@ jobs:
       - name: Prepare artifacts for release
         run: |
           mkdir -p release_files
-          cp artifacts/dev_uploader-linux_x64/dev_uploader release_files/dev_uploader-linux_x64
-          chmod +x release_files/dev_uploader-linux_x64
-          cp artifacts/dev_uploader-mac_arm64/dev_uploader release_files/dev_uploader-mac_arm64
-          chmod +x release_files/dev_uploader-mac_arm64
-          cp artifacts/dev_uploader-windows_x64.exe release_files/dev_uploader-windows_x64.exe
+          cp artifacts/dev_uploader-linux_x64-v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-linux_x64-v${CARGO_VERSION}
+          chmod +x release_files/dev_uploader-linux_x64-v${CARGO_VERSION}
+          cp artifacts/dev_uploader-mac_arm64-v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64-v${CARGO_VERSION}
+          chmod +x release_files/dev_uploader-mac_arm64-v${CARGO_VERSION}
+          cp artifacts/dev_uploader-windows_x64.exe-v${CARGO_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64-v${CARGO_VERSION}.exe
           ls -la release_files/
 
       - name: Create Release
