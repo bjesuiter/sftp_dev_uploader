@@ -80,7 +80,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}_v${{ env.CARGO_VERSION }}${matrix.artifact_extension}
+          name: ${{ matrix.artifact_name }}_v${{ env.CARGO_VERSION }}${{matrix.artifact_extension}}
           path: target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }}
 
   release:
