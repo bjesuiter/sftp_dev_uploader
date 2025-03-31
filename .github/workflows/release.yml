@@ -40,26 +40,22 @@ jobs:
             rust_target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
             artifact_extension: ''
-            build_artifact_name: dev_uploader
-            rustflags: '-A warnings'
+            build_executable_name: dev_uploader
           # - os: ubuntu-24.04
           #   rust_target: x86_64-unknown-linux-musl
           #   artifact_name: dev_uploader-linux_x64_musl
           #   artifact_extension: ''
-          #   build_artifact_name: dev_uploader
-          #   rustflags: '-A warnings'
+          #   build_executable_name: dev_uploader
           - os: macos-latest
             rust_target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
             artifact_extension: ''
-            build_artifact_name: dev_uploader
-            rustflags: '-A warnings'
+            build_executable_name: dev_uploader
           - os: windows-latest
             rust_target: x86_64-pc-windows-msvc
             artifact_name: dev_uploader-windows_x64
             artifact_extension: '.exe'
-            build_artifact_name: dev_uploader.exe
-            rustflags: '-A warnings'
+            build_executable_name: dev_uploader.exe
 
     steps:
       - uses: actions/checkout@v4
@@ -82,59 +78,62 @@ jobs:
 
       - name: Build macos
         if: matrix.rust_target == 'aarch64-apple-darwin'
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
-          target_path: target/${{ matrix.rust_target }}/release/dev_uploader
-          RUSTFLAGS: ${{ matrix.rustflags }}
+          target_path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/dev_uploader
+          RUSTFLAGS: '-A warnings'
           # needed for macos - will be ignored on other platforms of the matrix build
           MACOSX_DEPLOYMENT_TARGET: 14.5
           # needed for macos - tells the rust crates interfacing with openssl to link against static libraries
           OPENSSL_STATIC: 1
 
-        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
-
       - name: Build gnu linux
         if: matrix.rust_target == 'x86_64-unknown-linux-gnu'
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
-          target_path: target/${{ matrix.rust_target }}/release/dev_uploader
-          RUSTFLAGS: ${{ matrix.rustflags }}
+          target_path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/dev_uploader
+          RUSTFLAGS: '-A warnings'
           # TODO - Try: Add CFLAGS for OpenSSL compatibility with older glibc
           # CFLAGS: -D_FORTIFY_SOURCE=2 -O2 -fstack-protector-strong -Wformat -Werror=format-security -include string.h -U_GNU_SOURCE
-        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
 
       - name: Build windows
         if: matrix.rust_target == 'x86_64-pc-windows-msvc'
-        env:
-          target_path: target/${{ matrix.rust_target }}/release/dev_uploader.exe
-          RUSTFLAGS: ${{ matrix.rustflags }}
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
+        env:
+          target_path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/${{ matrix.build_executable_name }}
+          RUSTFLAGS: '-A warnings'
 
       # Artifact check and upload
       # ---------------------
       - name: Check if build was successful
         run: |
-          ./target/${{ matrix.rust_target }}/release/${{ matrix.build_artifact_name }} --help
+          ./target/${{ matrix.rust_target }}_${{ matrix.os }}/release/${{ matrix.build_executable_name }} --help
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}_v${{ needs.get-package-version.outputs.package_version }}${{matrix.artifact_extension}}
-          path: target/${{ matrix.rust_target }}/release/${{ matrix.build_artifact_name }}
+          name: ${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}
+          path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/${{ matrix.build_executable_name }}
 
-  # test-artifacts:
-  #   needs: get-package-version
-  #   runs-on: ${{matrix.os}}
-  #   strategy:
-  #     matrix:
-  #       include:
-  #         - os: ubuntu-24.04
-  #           rust_target: x86_64-unknown-linux-gnu
-  #           artifact_name: dev_uploader-linux_x64
-  #           artifact_extension: ''
-  #           build_artifact_name: dev_uploader
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
+  test-ubuntu-22-artifact:
+    name: Test Ubuntu 22.04 Artifact on Ubuntu 24.04
+    needs: [get-package-version, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Ubuntu 22.04 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
+          path: artifacts
+
+      - name: Make artifact executable
+        run: chmod +x artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader
+
+      - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
+        run: |
+          ./artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader --help
 
   release:
     name: Create Release
