@@ -95,12 +95,20 @@ jobs:
       - name: List downloaded artifacts
         run: ls -la artifacts/
 
+      - name: Prepare artifacts for release
+        run: |
+          mkdir -p release_files
+          cp artifacts/dev_uploader-linux_x64/dev_uploader release_files/dev_uploader-linux_x64
+          cp artifacts/dev_uploader-mac_arm64/dev_uploader release_files/dev_uploader-mac_arm64
+          cp artifacts/dev_uploader-windows_x64.exe/dev_uploader.exe release_files/dev_uploader-windows_x64.exe
+          ls -la release_files/
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           prerelease: false
-          files: artifacts/*
+          files: release_files/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
