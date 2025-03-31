@@ -41,6 +41,12 @@ jobs:
             artifact_extension: ''
             build_artifact_name: dev_uploader
             rustflags: '-A warnings'
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
+            artifact_name: dev_uploader-linux_x64_musl
+            artifact_extension: ''
+            build_artifact_name: dev_uploader
+            rustflags: '-A warnings'
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
