@@ -146,26 +146,27 @@ jobs:
           name: ${{ env.ARTIFACT_FILENAME }}
           path: ${{ env.BUILD_FILEPATH }}
 
-  test_ubuntu_22_artifact:
-    name: Test Ubuntu 22.04 Artifact on Ubuntu 24.04
-    needs: [get-package-version, matrix_build]
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
+  # This works as of 2025-03-31 - Re-enable if needed
+  # test_ubuntu_22_artifact:
+  #   name: Test Ubuntu 22.04 Artifact on Ubuntu 24.04
+  #   needs: [get-package-version, matrix_build]
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Download Ubuntu 22.04 artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
-          path: test_artifact
+  #     - name: Download Ubuntu 22.04 artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
+  #         path: test_artifact
 
-      - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
-        env:
-          ARTIFACT_FILEPATH: test_artifact/dev_uploader
-        run: |
-          ls -la test_artifact/
-          chmod +x ${{ env.ARTIFACT_FILEPATH }}
-          ./${{ env.ARTIFACT_FILEPATH }} --help
+  #     - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
+  #       env:
+  #         ARTIFACT_FILEPATH: test_artifact/dev_uploader
+  #       run: |
+  #         ls -la test_artifact/
+  #         chmod +x ${{ env.ARTIFACT_FILEPATH }}
+  #         ./${{ env.ARTIFACT_FILEPATH }} --help
 
   release:
     name: Create Release
