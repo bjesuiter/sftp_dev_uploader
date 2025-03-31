@@ -41,30 +41,9 @@ jobs:
         id: get_version
         run: echo "version=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
 
-  prepare_matrix_build:
-    name: Prepare Matrix Build
-    runs-on: ubuntu-latest
-    outputs:
-      excludes: ${{ steps.prepare_excludes.outputs.excludes }}
-    steps:
-      - name: Prepare Excludes
-        id: prepare_excludes
-        run: |
-          excludes=()
-          if [ "${{ inputs.build-macos }}" = false ]; then
-            excludes+=("rust_target: aarch64-apple-darwin")
-          fi
-          if [ "${{ inputs.build-windows }}" = false ]; then
-            excludes+=("rust_target: x86_64-pc-windows-msvc")
-          fi
-          if [ "${{ inputs.build-linux-ubuntu-22 }}" = false ]; then
-            excludes+=("rust_target: ubuntu-22.04")
-          fi
-          echo "excludes=${excludes[*]}" >> $GITHUB_OUTPUT
-
   matrix_build:
     name: Build
-    needs: [get-package-version, prepare_matrix_build]
+    needs: [get-package-version]
     strategy:
       matrix:
         include:
@@ -86,7 +65,6 @@ jobs:
             rust_target: x86_64-pc-windows-msvc
             artifact_name: dev_uploader-windows_x64
             build_executable_name: dev_uploader.exe
-        exclude: ${{ needs.prepare_matrix_build.outputs.excludes }}
     runs-on: ${{matrix.os}}
     outputs:
       os: ${{ matrix.os }}
