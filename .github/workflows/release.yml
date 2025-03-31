@@ -80,7 +80,6 @@ jobs:
         if: matrix.rust_target == 'aarch64-apple-darwin'
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
-          target_path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/dev_uploader
           RUSTFLAGS: '-A warnings'
           # needed for macos - will be ignored on other platforms of the matrix build
           MACOSX_DEPLOYMENT_TARGET: 14.5
@@ -91,7 +90,6 @@ jobs:
         if: matrix.rust_target == 'x86_64-unknown-linux-gnu'
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
-          target_path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/dev_uploader
           RUSTFLAGS: '-A warnings'
           # TODO - Try: Add CFLAGS for OpenSSL compatibility with older glibc
           # CFLAGS: -D_FORTIFY_SOURCE=2 -O2 -fstack-protector-strong -Wformat -Werror=format-security -include string.h -U_GNU_SOURCE
@@ -100,14 +98,13 @@ jobs:
         if: matrix.rust_target == 'x86_64-pc-windows-msvc'
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
-          target_path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/${{ matrix.build_executable_name }}
           RUSTFLAGS: '-A warnings'
 
       # Artifact check and upload
       # ---------------------
-      - name: Check if build was successful
+      - name: Check if build was successful (inside matrix_build)
         run: |
-          ./target/${{ matrix.rust_target }}_${{ matrix.os }}/release/${{ matrix.build_executable_name }} --help
+          ./target/${{ matrix.rust_target }}/release/${{ matrix.build_executable_name }} --help
 
       - name: Set artifact name
         id: set_artifact_name
@@ -118,7 +115,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.set_artifact_name.outputs.artifact_name }}
-          path: target/${{ matrix.rust_target }}_${{ matrix.os }}/release/${{ matrix.build_executable_name }}
+          path: target/${{ matrix.rust_target }}/release/${{ matrix.build_executable_name }}
 
   test-ubuntu-22-artifact:
     name: Test Ubuntu 22.04 Artifact on Ubuntu 24.04
