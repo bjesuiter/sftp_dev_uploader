@@ -161,7 +161,7 @@ jobs:
 
       - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
         env:
-          ARTIFACT_FILEPATH: test_artifact/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
+          ARTIFACT_FILEPATH: test_artifact/dev_uploader
         run: |
           ls -la test_artifact/
           chmod +x ${{ env.ARTIFACT_FILEPATH }}
