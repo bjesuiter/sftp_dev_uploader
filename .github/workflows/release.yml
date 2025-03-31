@@ -53,19 +53,6 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
-      # If we'd need to install homebrew and openssl on macos
-      # - name: Set up Homebrew
-      #   id: set-up-homebrew
-      #   uses: Homebrew/actions/setup-homebrew
-
-      # - name: Install OpenSSL 3
-      #   if: matrix.os == 'macos-latest'
-      #   run: brew install openssl@3
-
-      # - name: Verify OpenSSL version
-      #   if: matrix.os == 'macos-latest'
-      #   run: openssl version
-
       - name: Build
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
         env:
