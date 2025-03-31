@@ -51,6 +51,7 @@ jobs:
           # Use ubuntu 22.04 for gnu builds since the 24.04 version uses GLIBC 2.38
           # which is too new for the Linux Mint VPCs version 21.x, based on ubuntu 22.04
           - os: ubuntu-22.04
+            if: inputs.build-linux-ubuntu-22 == true
             rust_target: x86_64-unknown-linux-gnu
             artifact_name: dev_uploader-linux_x64
             build_executable_name: dev_uploader
@@ -59,10 +60,12 @@ jobs:
           #   artifact_name: dev_uploader-linux_x64_musl
           #   build_executable_name: dev_uploader
           - os: macos-latest
+            if: inputs.build-macos == true
             rust_target: aarch64-apple-darwin
             artifact_name: dev_uploader-mac_arm64
             build_executable_name: dev_uploader
           - os: windows-latest
+            if: inputs.build-windows == true
             rust_target: x86_64-pc-windows-msvc
             artifact_name: dev_uploader-windows_x64
             build_executable_name: dev_uploader.exe
