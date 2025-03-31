@@ -9,11 +9,11 @@ on:
 # @bjesuiter: all rustflags in here override the default ones in Cargo.toml.
 # Cargo.toml has specific rustflags for linking on macos and linux right now.
 jobs:
-  get-version:
-    name: Get Cargo Version
+  get-package-version:
+    name: Get Package Version
     runs-on: ubuntu-latest
     outputs:
-      cargo_version: ${{ steps.get_version.outputs.version }}
+      package_version: ${{ steps.get_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,7 +29,7 @@ jobs:
 
   build:
     name: Build
-    needs: get-version
+    needs: get-package-version
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
@@ -75,7 +75,6 @@ jobs:
 
       - name: Build
         env:
-          CARGO_VERSION: ${{ needs.get-version.outputs.cargo_version }}
           target_path: target/${{ matrix.target }}/release/dev_uploader
           RUSTFLAGS: ${{ matrix.rustflags }}
           # needed for macos - will be ignored on other platforms of the matrix build
@@ -91,15 +90,15 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}_v${{ needs.get-version.outputs.cargo_version }}${{matrix.artifact_extension}}
+          name: ${{ matrix.artifact_name }}_v${{ needs.get-package-version.outputs.package_version }}${{matrix.artifact_extension}}
           path: target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }}
 
   release:
     name: Create Release
-    needs: [get-version, build]
+    needs: [get-package-version, build]
     runs-on: ubuntu-latest
     env:
-      CARGO_VERSION: ${{ needs.get-version.outputs.cargo_version }}
+      PACKAGE_VERSION: ${{ needs.get-package-version.outputs.package_version }}
     permissions:
       contents: write
       packages: write
@@ -121,11 +120,11 @@ jobs:
       - name: Prepare artifacts for release
         run: |
           mkdir -p release_files
-          cp artifacts/dev_uploader-linux_x64_v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_v${CARGO_VERSION}
-          chmod +x release_files/dev_uploader-linux_x64_v${CARGO_VERSION}
-          cp artifacts/dev_uploader-mac_arm64_v${CARGO_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_v${CARGO_VERSION}
-          chmod +x release_files/dev_uploader-mac_arm64_v${CARGO_VERSION}
-          cp artifacts/dev_uploader-windows_x64_v${CARGO_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64_v${CARGO_VERSION}.exe
+          cp artifacts/dev_uploader-linux_x64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
+          chmod +x release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
+          cp artifacts/dev_uploader-mac_arm64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
+          chmod +x release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
+          cp artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe
           ls -la release_files/
 
       - name: Create Release
