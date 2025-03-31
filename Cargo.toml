@@ -17,6 +17,9 @@
 [target.'cfg(target_os = "macos")']
     rustflags = ["-C", "link-arg=-Wl,-dead_strip", "-C", "prefer-dynamic=yes"]
 
+[target.'cfg(target_os = "linux")']
+    rustflags = ["-C", "link-arg=-static"]
+
 
 [dependencies]
     clap              = { version = "4.5.20", features = ["derive", "cargo"] }
