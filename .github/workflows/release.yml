@@ -5,9 +5,23 @@ on:
     tags:
       - 'v*' # Trigger on version tags
   workflow_dispatch:
+    inputs:
+      build-macos:
+        description: 'Build for MacOS arm64'
+        required: true
+        default: true
+        type: boolean
+      build-windows:
+        description: 'Build for Windows x64'
+        required: true
+        default: true
+        type: boolean
+      build-linux-ubuntu-22:
+        description: 'Build for GNU Linux x64 on ubuntu 22.04'
+        required: true
+        default: true
+        type: boolean
 
-# @bjesuiter: all rustflags in here override the default ones in Cargo.toml.
-# Cargo.toml has specific rustflags for linking on macos and linux right now.
 jobs:
   get-package-version:
     name: Get Package Version
@@ -77,7 +91,7 @@ jobs:
       # Cargo build commands
       # ---------------------
       - name: Build macos
-        if: matrix.rust_target == 'aarch64-apple-darwin'
+        if: matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
           RUSTFLAGS: '-A warnings'
@@ -87,7 +101,7 @@ jobs:
           OPENSSL_STATIC: 1
 
       - name: Build gnu linux
-        if: matrix.rust_target == 'x86_64-unknown-linux-gnu'
+        if: matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
           RUSTFLAGS: '-A warnings'
@@ -95,7 +109,7 @@ jobs:
           # CFLAGS: -D_FORTIFY_SOURCE=2 -O2 -fstack-protector-strong -Wformat -Werror=format-security -include string.h -U_GNU_SOURCE
 
       - name: Build windows
-        if: matrix.rust_target == 'x86_64-pc-windows-msvc'
+        if: matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true
         run: cargo build -v --release --bin dev_uploader --target ${{ matrix.rust_target }}
         env:
           RUSTFLAGS: '-A warnings'
