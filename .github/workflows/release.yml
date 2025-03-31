@@ -74,9 +74,17 @@ jobs:
       full_artifact_name: ${{ steps.set_artifact_name.outputs.artifact_name }}
     steps:
       - uses: actions/checkout@v4
+        if: |
+          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
 
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        if: |
+          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
         with:
           toolchain: 1.85.1
           target: ${{ matrix.rust_target }}
