@@ -9,11 +9,28 @@ on:
 # @bjesuiter: all rustflags in here override the default ones in Cargo.toml.
 # Cargo.toml has specific rustflags for linking on macos and linux right now.
 jobs:
+  get-version:
+    name: Get Cargo Version
+    runs-on: ubuntu-latest
+    outputs:
+      cargo_version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: 1.85.1
+          override: true
+
+      - name: Get Version
+        id: get_version
+        run: echo "version=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_OUTPUT
+
   build:
     name: Build
+    needs: get-version
     runs-on: ${{matrix.os}}
-    outputs:
-      cargo_version: ${{ env.CARGO_VERSION }}
     strategy:
       matrix:
         include:
@@ -45,9 +62,6 @@ jobs:
           # - os: ubuntu-latest
           #   target: aarch64-unknown-linux-gnu
           #   artifact_name: dev_uploader-linux-arm64
-    env:
-      target_path: target/${{ matrix.target }}/release/dev_uploader
-      CARGO_VERSION: '' # this var is created here and will be filled in by the get_version step
 
     steps:
       - uses: actions/checkout@v4
@@ -59,19 +73,16 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
-      - name: Get Version
-        id: get_version
-        run: echo "CARGO_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')" >> $GITHUB_ENV
-
       - name: Build
-        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
         env:
+          CARGO_VERSION: ${{ needs.get-version.outputs.cargo_version }}
+          target_path: target/${{ matrix.target }}/release/dev_uploader
           RUSTFLAGS: ${{ matrix.rustflags }}
           # needed for macos - will be ignored on other platforms of the matrix build
           MACOSX_DEPLOYMENT_TARGET: 14.5
           # needed for macos - tells the rust crates interfacing with openssl to link against static libraries
           OPENSSL_STATIC: 1
-          # OPENSSL_DIR: /opt/homebrew/opt/openssl@3
+        run: cargo build -v --release --bin dev_uploader --target ${{ matrix.target }}
 
       - name: Check if build was successful
         run: |
@@ -80,15 +91,15 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}_v${{ env.CARGO_VERSION }}${{matrix.artifact_extension}}
+          name: ${{ matrix.artifact_name }}_v${{ needs.get-version.outputs.cargo_version }}${{matrix.artifact_extension}}
           path: target/${{ matrix.target }}/release/${{ matrix.build_artifact_name }}
 
   release:
     name: Create Release
-    needs: build
+    needs: [get-version, build]
     runs-on: ubuntu-latest
     env:
-      CARGO_VERSION: ${{ needs.build.outputs.cargo_version }}
+      CARGO_VERSION: ${{ needs.get-version.outputs.cargo_version }}
     permissions:
       contents: write
       packages: write
