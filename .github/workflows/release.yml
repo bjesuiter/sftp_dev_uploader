@@ -92,13 +92,15 @@ jobs:
           path: artifacts
           pattern: dev_uploader-*
 
+      - name: List downloaded artifacts
+        run: ls -la artifacts/
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           prerelease: false
-          files: |
-            artifacts/dev_uploader-*
+          files: artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
