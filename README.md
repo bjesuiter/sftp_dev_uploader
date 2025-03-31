@@ -44,7 +44,7 @@ Testing
 
 Push & Release
 
-- Commit the new version in Cargo.toml and create a new tag with the same version
+- Commit the new version in Cargo.toml and create a new tag with the same version (e.g. v1.2.0)
 - Push the tag => github actions will build the new release
 - Go to the release draft: https://github.com/bjesuiter/sftp_dev_uploader/releases
 - add the changelog and publish it
@@ -180,6 +180,10 @@ Add more rust targets via:
 ---
 
 # Changelog
+
+## Release 1.1.4 - 2025-03-31
+
+- fix github actions release workflow
 
 ## Release 1.1.2 & 1.1.3 - 2025-03-31
 
