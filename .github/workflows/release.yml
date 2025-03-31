@@ -181,10 +181,12 @@ jobs:
           path: test_artifact
 
       - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
+        env:
+          ARTIFACT_FILEPATH: test_artifact/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
         run: |
           ls -la test_artifact/
-          chmod +x test_artifact/dev_uploader
-          ./test_artifact/dev_uploader --help
+          chmod +x ${{ env.ARTIFACT_FILEPATH }}
+          ./${{ env.ARTIFACT_FILEPATH }} --help
 
   release:
     name: Create Release
