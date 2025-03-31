@@ -124,7 +124,7 @@ jobs:
           chmod +x release_files/dev_uploader-linux_x64_v${PACKAGE_VERSION}
           cp artifacts/dev_uploader-mac_arm64_v${PACKAGE_VERSION}/dev_uploader release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
           chmod +x release_files/dev_uploader-mac_arm64_v${PACKAGE_VERSION}
-          cp artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}/dev_uploader.exe release_files/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe
+          cp artifacts/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe/dev_uploader.exe release_files/dev_uploader-windows_x64_v${PACKAGE_VERSION}.exe
           ls -la release_files/
 
       - name: Create Release
