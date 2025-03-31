@@ -150,6 +150,15 @@ Add more rust targets via:
         /usr/lib/libz.1.dylib (compatibility version 1.0.0, current version 1.2.12)
         /usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)
         /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1345.120.2)
+
+    # Example output after linking ssh2 statically (from a local build)
+    bx see-linked-libs-prod
+    target/release/dev_uploader:
+        /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 3208.0.0)
+        /System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices (compatibility version 1.0.0, current version 1226.0.0)
+        /usr/lib/libz.1.dylib (compatibility version 1.0.0, current version 1.2.12)
+        /usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)
+        /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)
 ```
 
 ---
