@@ -117,15 +117,27 @@ jobs:
       # Artifact check and upload
       # ---------------------
       - name: Check if build was successful (inside matrix_build)
+        if: |
+          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
         run: |
           ./target/${{ matrix.rust_target }}/release/${{ matrix.build_executable_name }} --help
 
       - name: Set artifact name
         id: set_artifact_name
+        if: |
+          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
         run: echo "artifact_name=${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         id: upload_artifact
+        if: |
+          (matrix.rust_target == 'aarch64-apple-darwin' && inputs.build-macos == true) ||
+          (matrix.rust_target == 'x86_64-unknown-linux-gnu' && inputs.build-linux-ubuntu-22 == true) ||
+          (matrix.rust_target == 'x86_64-pc-windows-msvc' && inputs.build-windows == true)
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.set_artifact_name.outputs.artifact_name }}
