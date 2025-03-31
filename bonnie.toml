@@ -10,7 +10,8 @@ version = "0.3.2"
     prod.desc           = "Shortcut for building the release binary"
     # prod.env            = { RUSTFLAGS = "-C link-arg=-Wl,-static -C link-arg=-dead_strip" }
 
-    see-linked-libs-prod.cmd = "otool -L target/release/dev_uploader"
+    otool-prod.cmd  = "otool -L target/release/dev_uploader"
+    otool-prod.desc = "Show linked libraries of the release binary"
 
     pg.cmd                 = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground"
     pg-initial.cmd         = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground --upload-initial"
