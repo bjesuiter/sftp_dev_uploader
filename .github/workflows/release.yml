@@ -162,16 +162,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
-          path: artifacts
-
-      - run: ls -la artifacts/
-
-      - name: Make artifact executable
-        run: chmod +x artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader
+          path: test_artifact
 
       - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
         run: |
-          ./artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader --help
+          ls -la test_artifact/
+          chmod +x test_artifact/dev_uploader
+          ./test_artifact/dev_uploader --help
 
   release:
     name: Create Release
