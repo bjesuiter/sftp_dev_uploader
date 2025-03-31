@@ -143,7 +143,7 @@ jobs:
           name: ${{ steps.set_artifact_name.outputs.artifact_name }}
           path: target/${{ matrix.rust_target }}/release/${{ matrix.build_executable_name }}
 
-  test-ubuntu-22-artifact:
+  test_ubuntu_22_artifact:
     name: Test Ubuntu 22.04 Artifact on Ubuntu 24.04
     needs: [get-package-version, matrix_build]
     runs-on: ubuntu-24.04
@@ -157,11 +157,11 @@ jobs:
           path: artifacts
 
       - name: Make artifact executable
-        run: chmod +x artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader
+        run: chmod +x artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
 
       - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
         run: |
-          ./artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader --help
+          ./artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }} --help
 
   release:
     name: Create Release
