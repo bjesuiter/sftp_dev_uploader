@@ -167,11 +167,11 @@ jobs:
       - run: ls -la artifacts/
 
       - name: Make artifact executable
-        run: chmod +x artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}
+        run: chmod +x artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader
 
       - name: Test artifact for ubuntu-22.04 on ubuntu-24.04
         run: |
-          ./artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }} --help
+          ./artifacts/dev_uploader-linux_x64_ubuntu-22.04_v${{ needs.get-package-version.outputs.package_version }}/dev_uploader --help
 
   release:
     name: Create Release
