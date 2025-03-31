@@ -190,11 +190,11 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: release_files
+          path: artifacts
           pattern: dev_uploader-*
 
       - name: List downloaded artifacts
-        run: ls -la release_files/
+        run: ls -la artifacts/
 
       - name: Prepare artifacts for release
         run: |
