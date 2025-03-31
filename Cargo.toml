@@ -41,10 +41,17 @@
     watchexec-filterer-globset = "4.0.1"
     watchexec-events           = "3.0.0"
     indicatif                  = "0.17.8"
-    ssh2                       = { version = "0.9.4", features = ["vendored-openssl"] }
     insta                      = "1.40.0"
     once_cell                  = "1.20.2"
     static_init                = "1.0.3"
     rand                       = "0.8.5"
     oneshot                    = "0.1.8"
     walkdir                    = "2.5.0"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+    ssh2 = { version = "0.9.4" } # Use system OpenSSL on Linux
+
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+    ssh2 = { version = "0.9.4", features = [
+        "vendored-openssl",
+    ] } # Use vendored OpenSSL everywhere else
