@@ -4,23 +4,33 @@
 
 - clap (cli args parser): https://docs.rs/clap/latest/clap/
 - watchexec (file watcher): https://docs.rs/watchexec/latest/watchexec/
-- Rust by example (General Rust knowledge): https://doc.rust-lang.org/rust-by-example/index.html
+- Rust by example (General Rust knowledge):
+  https://doc.rust-lang.org/rust-by-example/index.html
 
 ## Setup (for development)
 
-- Install cargo-insta (for Snapshot Testing) extension for cargo cli: `cargo install cargo-insta`
-- Run `docker compose up -d` to start the sftpgo docker container for the first time (only needed once for user setup)
-- Goto `http://localhost:8080` to access the SFTP Go web-ui and make the basic config (it will be persisted to the ./docker/volumes folder in this repo, which is ignored by git)
-  - Configure the admin user as user `admin` with password `admin` (since it is only used for testing locally), do not configure 2FA
+- Install cargo-insta (for Snapshot Testing) extension for cargo cli:
+  `cargo install cargo-insta`
+- Run `docker compose up -d` to start the sftpgo docker container for the first
+  time (only needed once for user setup)
+- Goto `http://localhost:8888` to access the SFTP Go web-ui and make the basic
+  config (it will be persisted to the ./docker/volumes folder in this repo,
+  which is ignored by git)
+  - Configure the admin user as user `admin` with password `admin` (since it is
+    only used for testing locally), do not configure 2FA
   - In the left menu, go to `Users`
     - add the user `playground` with password `playground`
     - add the user `test` with password `test`
-    - optional (not implemented yet): add the user `test_pubkey` with password `test_pubkey` and a public key of your choice, to test public key auth
-      Note that all standard tests (`bx test`) use the username+password login for simplicity. To test public key auth, run `bx testsuite_advanced` (not implemented yet)
+    - optional (not implemented yet): add the user `test_pubkey` with password
+      `test_pubkey` and a public key of your choice, to test public key auth
+      Note that all standard tests (`bx test`) use the username+password login
+      for simplicity. To test public key auth, run `bx testsuite_advanced` (not
+      implemented yet)
 
 ## Install Dependencies
 
-Simply build the project with, for example `bx build-debug`, to install all dependencies.
+Simply build the project with, for example `bx build-debug`, to install all
+dependencies.
 
 ## Release a new version (manual)
 
@@ -44,18 +54,25 @@ Testing
 
 Push & Release
 
-- Commit the new version in Cargo.toml and create a new tag with the same version (e.g. v1.2.0)
+- Commit the new version in Cargo.toml and create a new tag with the same
+  version (e.g. v1.2.0)
 - Push the tag => github actions will build the new release
-- Go to the release draft: https://github.com/bjesuiter/sftp_dev_uploader/releases
+- Go to the release draft:
+  https://github.com/bjesuiter/sftp_dev_uploader/releases
 - add the changelog and publish it
 
 ## More useful scripts
 
-- Run `bx test -- <test-name>` to run a specific test (giving it the test name or the file with all the tests as argument)
-- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout output
-- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout output
-- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout output
-- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout output
+- Run `bx test -- <test-name>` to run a specific test (giving it the test name
+  or the file with all the tests as argument)
+- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout
+  output
+- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout
+  output
+- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout
+  output
+- Run `bx test -- --nocapture <test-name>` to run a specific test with stdout
+  output
 
 ---
 
@@ -135,7 +152,8 @@ Key optimizations:
 - Keep existing thread-per-file approach
 - Maintain 128KB buffer size since it's already optimal
 
-Note: Actual performance gains depend on network latency and SSH server capabilities. Test with your specific use case.
+Note: Actual performance gains depend on network latency and SSH server
+capabilities. Test with your specific use case.
 
 ---
 
@@ -143,7 +161,8 @@ Note: Actual performance gains depend on network latency and SSH server capabili
 
 ## Setup for Cross-Compilation (not working without linter support!)
 
-This only installs a respective rust std for the target platforms but does not provide the full build environment.
+This only installs a respective rust std for the target platforms but does not
+provide the full build environment.
 
 Add more rust targets via:
 
@@ -205,7 +224,8 @@ Add more rust targets via:
 
 ## Release 1.0.1 - 2024-12-02
 
-- Re-integrate precreation of remote dirs due to errors when two or more worker threads try to create the same dir in parallel
+- Re-integrate precreation of remote dirs due to errors when two or more worker
+  threads try to create the same dir in parallel
 
 ## Release 1.0.0 - 2024-12-02
 

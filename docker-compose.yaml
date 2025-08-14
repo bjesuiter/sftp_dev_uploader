@@ -3,7 +3,7 @@ services:
     image: drakkan/sftpgo:v2.6
     ports:
       - 2022:2022
-      - 8080:8080
+      - 8888:8080
     volumes:
       - ./docker/volumes/sftpgo_service_root:/var/lib/sftpgo
       - ./docker/volumes/sftpgo_data_root:/srv/sftpgo
