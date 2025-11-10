@@ -14,8 +14,10 @@ version = "0.3.2"
     prod.desc           = "Shortcut for building the release binary"
     # prod.env            = { RUSTFLAGS = "-C link-arg=-Wl,-static -C link-arg=-dead_strip" }
 
-    otool-prod.cmd         = "otool -L target/release/dev_uploader"
-    otool-prod.desc        = "Show linked libraries of the release binary"
+    otool-prod.cmd  = "otool -L target/release/dev_uploader"
+    otool-prod.desc = "Show linked libraries of the release binary"
+
+    # Toolchain & Dependency Management
     libinfo.cmd            = "cargo tree -p %%"
     libinfo.desc           = "Show the dependency tree of the given package and it's version used in the project, for example: `bx libinfo clap`"
     install-toolchain.cmd  = "rustup install 1.85.1"
