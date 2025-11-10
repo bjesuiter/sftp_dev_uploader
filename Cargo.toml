@@ -47,6 +47,7 @@
     rand                       = "0.9.2"
     oneshot                    = "0.1.11"
     walkdir                    = "2.5.0"
+    home                       = "0.5.11"
 
 [target.'cfg(all(target_os = "linux", target_env = "gnu"))'.dependencies]
     # Use system OpenSSL on Linux => avoids problems with static linking when building on ubuntu-22.04
