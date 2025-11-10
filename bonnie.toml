@@ -20,6 +20,8 @@ version = "0.3.2"
     # Toolchain & Dependency Management
     libinfo.cmd                 = "cargo tree -p %%"
     libinfo.desc                = "Show the dependency tree of the given package and it's version used in the project, for example: `bx libinfo clap`"
+    update.cmd                  = "cargo update %%"
+    update.desc                 = "Update the dependencies of the given package, for example: `bx update watchexec-events`"
     install-toolchain.cmd       = "rustup install 1.85.1"
     install-toolchain.desc      = "Install the Rust toolchain version 1.85.1"
     set-toolchain.cmd           = "rustup override set 1.85.1"
