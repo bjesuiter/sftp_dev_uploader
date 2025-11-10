@@ -99,14 +99,6 @@ impl WatchActor {
         ensure_wx.config.pathset([watch_dir]);
         ensure_wx.config.throttle(Duration::from_millis(1500));
 
-        // Filter config: https://docs.rs/watchexec-filterer-tagged/latest/watchexec_filterer_tagged/
-        // TODO: tt-bj2: figure out how this works!
-        // let filter = Filter::from_str("FileEventKind:=Modify(Data(*))");
-        // let origin = PathBuf::from(watch_dir);
-        // let workdir = PathBuf::from(watch_dir);
-
-        // let filterer = GlobsetFilterer::new(origin, [], [], ["stats.json"], ['']).await;
-
         match ensure_wx.main().await.into_diagnostic() {
             Ok(_) => return Ok(()),
             Err(e) => {
