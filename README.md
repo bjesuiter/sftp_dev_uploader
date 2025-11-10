@@ -214,6 +214,13 @@ performance profiler)
 
 # Changelog
 
+## Release 1.1.5 - 2025-11-10
+
+- update some non-major dependencies (aka. without updating all watchexec
+  dependencies which have major version updates)
+- downgrade home package version to 0.5.11 to be compatible with rust 1.85.1 for
+  ubuntu 22.04
+
 ## Release 1.1.4 - 2025-03-31
 
 - fix github actions release workflow
