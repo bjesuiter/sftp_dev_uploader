@@ -14,10 +14,14 @@ version = "0.3.2"
     prod.desc           = "Shortcut for building the release binary"
     # prod.env            = { RUSTFLAGS = "-C link-arg=-Wl,-static -C link-arg=-dead_strip" }
 
-    otool-prod.cmd  = "otool -L target/release/dev_uploader"
-    otool-prod.desc = "Show linked libraries of the release binary"
-    libinfo.cmd     = "cargo tree -p %%"
-    libinfo.desc    = "Show the dependency tree of the given package and it's version used in the project, for example: `bx libinfo clap`"
+    otool-prod.cmd         = "otool -L target/release/dev_uploader"
+    otool-prod.desc        = "Show linked libraries of the release binary"
+    libinfo.cmd            = "cargo tree -p %%"
+    libinfo.desc           = "Show the dependency tree of the given package and it's version used in the project, for example: `bx libinfo clap`"
+    install-toolchain.cmd  = "rustup install 1.85.1"
+    install-toolchain.desc = "Install the Rust toolchain version 1.85.1"
+    set-toolchain.cmd      = "rustup override set 1.85.1"
+    set-toolchain.desc     = "Set the Rust toolchain version 1.85.1"
 
     pg.cmd                 = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground"
     pg-initial.cmd         = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground --upload-initial"
