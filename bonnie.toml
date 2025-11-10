@@ -3,6 +3,8 @@
 version = "0.3.2"
 
 [scripts]
+    build.cmd           = "cargo build --bin dev_uploader"
+    build.desc          = "Build the dev_uploader binary"
     build-debug.cmd     = "cargo build --bin dev_uploader"
     build-release.cmd   = "cargo build --bin dev_uploader --release"
     build-profiling.cmd = "cargo build --bin dev_uploader --profile profiling"
