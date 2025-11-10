@@ -33,13 +33,15 @@ version = "0.3.2"
 
     # call with specific test: `bx test -- test_sftp_compute_relative_filepath` 
     # run one full test file: `bx test -- ssh2_client_tests`
-    test.cmd       = "cargo insta test --jobs=1 -- --nocapture %%"
-    test.desc      = "Run all tests (without argument) or one test once (with the test function as arg)"
-    review.cmd     = "cargo insta review"
-    review.desc    = "Review all snapshots"
-    test-u.cmd     = "cargo insta review"
-    test-u.desc    = "Run tests and update snapshots interactively"
-    test-watch.cmd = "cargo watch -x 'insta test -- --nocapture'"
+    test.cmd         = "cargo insta test --jobs=1 -- --nocapture %%"
+    test.desc        = "Run all tests (without argument) or one test once (with the test function as arg)"
+    test-docker.cmd  = "docker compose up -d && bx test"
+    test-docker.desc = "Runs the test docker compose setup"
+    review.cmd       = "cargo insta review"
+    review.desc      = "Review all snapshots"
+    test-u.cmd       = "cargo insta review"
+    test-u.desc      = "Run tests and update snapshots interactively"
+    test-watch.cmd   = "cargo watch -x 'insta test -- --nocapture'"
 
     # Specialized Test commands
     test-sftp-client.cmd = "bonnie test -- sftp_client_tests"
