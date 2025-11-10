@@ -196,6 +196,20 @@ Add more rust targets via:
         /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)
 ```
 
+## Performance Testing with samply
+
+Samply-CLI: https://crates.io/crates/samply
+
+- cargo install --locked samply
+
+TODO: Update usage with carg-samply (custom cargo subcommand for samply
+performance profiler)
+
+## TODO: Static performance testing mit rust clippy
+
+- findet Möglichkeiten, z.B. unnötige Datenkopien im Rust Code zu finden =>
+  könnte für SFTPClient class sehr hilfreich sein
+
 ---
 
 # Changelog
