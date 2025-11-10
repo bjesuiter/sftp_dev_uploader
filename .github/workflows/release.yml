@@ -195,7 +195,7 @@ jobs:
           pattern: dev_uploader-*
 
       - name: List downloaded artifacts
-        run: ls -la artifacts/
+        run: tree -L 5 -a artifacts/
 
       - name: Prepare artifacts for release
         run: |
