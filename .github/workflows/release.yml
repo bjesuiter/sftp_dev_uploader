@@ -137,7 +137,7 @@ jobs:
         id: upload_artifact
         env:
           BUILD_FILEPATH: target/${{ matrix.rust_target }}/release/dev_uploader${{ matrix.artifact_extension }}
-          ARTIFACT_FILENAME: ${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}${{ matrix.artifact_extension }}
+          ARTIFACT_FILENAME: ${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}
         if: |
           (matrix.rust_target == 'aarch64-apple-darwin' && (github.event_name != 'workflow_dispatch' || inputs.build-macos == true)) ||
           (matrix.rust_target == 'x86_64-unknown-linux-gnu' && (github.event_name != 'workflow_dispatch' || inputs.build-linux-ubuntu-22 == true)) ||
@@ -146,11 +146,6 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILENAME }}
           path: ${{ env.BUILD_FILEPATH }}
-
-      - name: Output artifact filename
-        id: output_artifact_name
-        if: steps.upload_artifact.conclusion == 'success'
-        run: echo "artifact_filename=${{ matrix.artifact_name }}_${{ matrix.os }}_v${{ needs.get-package-version.outputs.package_version }}${{ matrix.artifact_extension }}" >> $GITHUB_OUTPUT
 
   # This works as of 2025-03-31 - Re-enable if needed
   # test_ubuntu_22_artifact:
@@ -203,24 +198,34 @@ jobs:
         run: ls -la artifacts/
 
       - name: Prepare artifacts for release
-        env:
-          LINUX_ARTIFACT_FILENAME: dev_uploader-linux_x64_ubuntu-22.04_v${{ env.PACKAGE_VERSION }}
-          MACOS_ARTIFACT_FILENAME: dev_uploader-mac_arm64_macos-latest_v${{ env.PACKAGE_VERSION }}
-          WINDOWS_ARTIFACT_FILENAME: dev_uploader-windows_x64_windows-latest_v${{ env.PACKAGE_VERSION }}.exe
         run: |
           mkdir -p release_files
-          if [ "${{ inputs.build-linux-ubuntu-22 }}" = "true" ]; then
-            cp -r artifacts/${LINUX_ARTIFACT_FILENAME}
-            chmod +x release_files/${LINUX_ARTIFACT_FILENAME}
-          fi
-          if [ "${{ inputs.build-macos }}" = "true" ]; then
-            cp -r artifacts/${MACOS_ARTIFACT_FILENAME}
-            chmod +x release_files/${MACOS_ARTIFACT_FILENAME}
-          fi
-          if [ "${{ inputs.build-windows }}" = "true" ]; then
-            cp -r artifacts/${WINDOWS_ARTIFACT_FILENAME}
-          fi
-          ls -la release_files/
+
+          # Process each downloaded artifact directory dynamically
+          for artifact_dir in artifacts/*/; do
+            # Remove trailing slash and get directory name
+            artifact_name=$(basename "$artifact_dir")
+            
+            echo "Processing artifact dir: ${artifact_name}"
+            
+            # Determine binary name and release filename based on artifact content
+            if [ -f "artifacts/${artifact_name}/dev_uploader.exe" ]; then
+              # Windows artifact
+              cp "artifacts/${artifact_name}/dev_uploader.exe" "release_files/${artifact_name}.exe"
+              echo "✓ Prepared Windows artifact: ${artifact_name}.exe"
+            elif [ -f "artifacts/${artifact_name}/dev_uploader" ]; then
+              # Linux or macOS artifact
+              cp "artifacts/${artifact_name}/dev_uploader" "release_files/${artifact_name}"
+              chmod +x "release_files/${artifact_name}"
+              echo "✓ Prepared Unix artifact: ${artifact_name}"
+            else
+              echo "⚠ Warning: No binary found in ${artifact_name}"
+            fi
+          done
+
+          echo ""
+          echo "Release files prepared:"
+          ls -lah release_files/
 
       - name: Create Release
         id: create_release
