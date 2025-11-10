@@ -1,2 +1,3 @@
+# Version is set to 1.85.1 to be compatible with the Ubuntu 22.04 LTS image in github actions
 [toolchain]
     channel = "1.85.1"
