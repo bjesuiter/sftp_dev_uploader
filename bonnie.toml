@@ -3,6 +3,8 @@
 version = "0.3.2"
 
 [scripts]
+    i.cmd               = "cargo update"
+    i.desc              = "Update all dependencies in the specification given in Cargo.toml and update the lock file"
     build.cmd           = "cargo build --bin dev_uploader"
     build.desc          = "Build the dev_uploader binary"
     build-debug.cmd     = "cargo build --bin dev_uploader"
@@ -14,6 +16,8 @@ version = "0.3.2"
 
     otool-prod.cmd  = "otool -L target/release/dev_uploader"
     otool-prod.desc = "Show linked libraries of the release binary"
+    libinfo.cmd     = "cargo tree -p %%"
+    libinfo.desc    = "Show the dependency tree of the given package and it's version used in the project, for example: `bx libinfo clap`"
 
     pg.cmd                 = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground"
     pg-initial.cmd         = "cargo run --bin dev_uploader -- -H localhost -P 2022 -u playground:. -i .gitkeep -e .gitignore -U playground -W playground --upload-initial"
